@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "outDir": "dist",
+    "rootDir": "./src",
+    "strict": true,
+    "removeComments": false,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "noUnusedLocals": true,
+    "inlineSourceMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

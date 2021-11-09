@@ -1,0 +1,53 @@
+{
+  "name": "@epeejs/routing-controllers-metadata",
+  "description": "提供 routing-controllers 元数据能力",
+  "version": "0.0.1",
+  "scripts": {
+    "compile": "npm run clean && tsc -p .",
+    "release": "npm run compile && npm publish",
+    "clean": "tsc -b --clean",
+    "prepare": "husky install"
+  },
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/epeejs/routing-controllers-metadata"
+  },
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "routing-controllers",
+    "metadata"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^13.1.0",
+    "@commitlint/config-conventional": "^13.1.0",
+    "@types/koa": "^2.13.4",
+    "@umijs/fabric": "^2.8.1",
+    "husky": ">=6",
+    "lint-staged": ">=10",
+    "prettier": "^2.4.0",
+    "routing-controllers": "^0.8.1",
+    "typedi": "^0.10.0"
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": "eslint --fix",
+    "*.{json,ts,tsx,js,jsx,md,scss,less,css,html}": "prettier --write"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.176",
+    "lodash": "^4.17.21"
+  },
+  "peerDependencies": {
+    "routing-controllers": "<9",
+    "typedi": "*"
+  }
+}
