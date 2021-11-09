@@ -2,59 +2,86 @@ import { chain } from 'lodash';
 import { getMetadataArgsStorage } from 'routing-controllers';
 
 export interface MetadataArgs {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   target: Function;
   method?: string | symbol;
   exclude?: boolean;
+  data?: any;
 }
 
 class MetadataStorage {
   metadataMap = new Map<symbol, MetadataArgs[]>();
 
-  static getRouteRegStr(baseRoute: string, route: string | RegExp, type = 'get') {
+  static getRouteRegxStr(baseRoute: string, route: string | RegExp, type = 'get') {
     return `^${type} .*${baseRoute}${(route instanceof RegExp ? route.source : route)
       .split('/')
       .map((s) => (s[0] === ':' ? '.*' : s))
       .join('/')}$`;
   }
+
   push(key: symbol, metadata: MetadataArgs) {
     const metadatas = this.metadataMap.get(key) || [];
     this.metadataMap.set(key, [...metadatas, metadata]);
   }
-  getPathRegs(key: symbol) {
+
+  getMarkedRoutes(key: symbol) {
     const storage = getMetadataArgsStorage();
     const metadatas = this.metadataMap.get(key) || [];
-    const needExcludeActions = metadatas.filter((m) => m.exclude);
-    const pathRegs = metadatas
-      .filter((m) => !m.exclude)
-      .map((m) => {
-        const controllerRoute = storage.controllers.find((n) => n.target === m.target)!.route ?? '';
-        const actions = storage.actions.filter((n) => n.target === m.target);
+    const excludeActions = metadatas.filter((m) => m.exclude);
+    const includeMetadatas = metadatas.filter((m) => !m.exclude);
+    const routes = includeMetadatas.map((m) => {
+      const controller = storage.controllers.find((n) => n.target === m.target)!;
+      const actions = storage.actions.filter((n) => n.target === m.target);
+      const controllerRoute = controller.route ?? '';
 
-        // action
-        if (m.method) {
-          const action = actions.find((n) => n.method === m.method)!;
+      // action
+      if (m.method) {
+        const action = actions.find((n) => n.method === m.method)!;
 
-          return MetadataStorage.getRouteRegStr(controllerRoute, action.route, action.type);
-          // controller
-        } else {
-          return actions
-            .filter(
-              (n) =>
-                !needExcludeActions.some((a) => a.target === n.target && a.method === n.method),
-            )
-            .map((n) => MetadataStorage.getRouteRegStr(controllerRoute, n.route, n.type));
-        }
-      });
-
-    return chain(pathRegs)
+        return {
+          regxStr: MetadataStorage.getRouteRegxStr(controllerRoute, action.route, action.type),
+          action,
+          controller,
+        };
+        // controller
+      } else {
+        return actions
+          .filter(
+            (n) => !excludeActions.some((a) => a.target === n.target && a.method === n.method),
+          )
+          .map((n) => ({
+            regxStr: MetadataStorage.getRouteRegxStr(controllerRoute, n.route, n.type),
+            action: n,
+            controller,
+          }));
+      }
+    });
+    const uniqRoutes = chain(routes)
       .flatten()
-      .uniq()
-      .value()
-      .map((m) => new RegExp(m));
+      .uniqBy((m) => m.regxStr)
+      .value();
+
+    return uniqRoutes.map(({ action, regxStr }) => {
+      return {
+        regxStr,
+        markContent: {
+          controller: includeMetadatas.find((n) => n.target === action.target && !n.method)?.data,
+          action: includeMetadatas.find(
+            (n) => n.method === action.method && n.target === action.target,
+          )?.data,
+        },
+      };
+    });
   }
-  match(key: symbol, path: string) {
-    const regs = this.getPathRegs(key);
-    return regs.some((m) => m.test(path));
+
+  find(key: symbol, path: string) {
+    const routes = this.getMarkedRoutes(key);
+
+    return routes.find((m) => {
+      const regx = new RegExp(m.regxStr);
+
+      return regx.test(path);
+    });
   }
 }
 

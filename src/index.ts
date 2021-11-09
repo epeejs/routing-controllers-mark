@@ -1,4 +1,4 @@
-import createMetadata from './createMetadata';
+import createMark from './createMark';
 import { getMetadataStorage } from './MetadataStorage';
 
-export { getMetadataStorage, createMetadata };
+export { getMetadataStorage, createMark };
