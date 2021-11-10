@@ -1,18 +1,18 @@
 {
-  "name": "@epeejs/routing-controllers-metadata",
+  "name": "@epeejs/routing-controllers-mark",
   "description": "提供 routing-controllers 元数据能力",
   "version": "0.0.1",
   "scripts": {
     "compile": "npm run clean && tsc -p .",
-    "release": "npm run compile && npm publish",
-    "clean": "tsc -b --clean",
-    "prepare": "husky install"
+    "clean": "rimraf dist",
+    "prepare": "husky install",
+    "release": "npm run compile && npm publish"
   },
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/epeejs/routing-controllers-metadata"
+    "url": "https://github.com/epeejs/routing-controllers-mark"
   },
   "license": "MIT",
   "files": [
@@ -21,7 +21,8 @@
   ],
   "keywords": [
     "routing-controllers",
-    "metadata"
+    "metadata",
+    "mark"
   ],
   "publishConfig": {
     "access": "public",
@@ -35,7 +36,8 @@
     "husky": ">=6",
     "lint-staged": ">=10",
     "prettier": "^2.4.0",
-    "routing-controllers": "^0.8.1",
+    "rimraf": "^3.0.2",
+    "routing-controllers": "^0.9.0",
     "typedi": "^0.10.0"
   },
   "lint-staged": {

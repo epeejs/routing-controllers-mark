@@ -1,19 +1,18 @@
-# routing-controllers-metadata
+# routing-controllers-mark
 
-提供 routing-controllers 元数据能力，实现更加强大易用的切面编程
+为 [routing-controllers](https://github.com/typestack/routing-controllers) 提供标记拦截能力，实现更加强大易用的切面编程
 
 ## 用法
 
 ```ts
-import { createMark } from '@epeejs/routing-controllers-metadata';
-import { Context } from 'koa';
+import { createMark } from '@epeejs/routing-controllers-mark';
 
 const {
   Mark: Sign,
   RemoveMark: NoSign,
   MarkMiddleware: SignVerifyMiddleware,
 } = createMark({
-  action(context: Context, next) {
+  action(context, next, route) {
     // ...sign verify
     next();
   },
