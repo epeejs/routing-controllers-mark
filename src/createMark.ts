@@ -6,11 +6,7 @@ import createMarkMiddleware from './createMarkMiddleware';
 import type { MarkRoute } from './MetadataStorage';
 
 export interface MarkOptions {
-  action: (
-    context: Context,
-    next: (err?: any) => Promise<any>,
-    route: MarkRoute,
-  ) => Promise<any> | void;
+  action: (context: Context, route: MarkRoute) => Promise<any> | void;
 }
 export type MarkType = MarkDecorator & {
   MarkMiddleware: MarkMiddlewareType;
