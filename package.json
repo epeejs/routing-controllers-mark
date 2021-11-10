@@ -1,7 +1,7 @@
 {
   "name": "@epeejs/routing-controllers-mark",
-  "description": "提供 routing-controllers 元数据能力",
-  "version": "0.0.1",
+  "description": "适用于 routing-controllers 的自定义注解拦截功能",
+  "version": "0.0.0-beta.1",
   "scripts": {
     "compile": "npm run clean && tsc -p .",
     "clean": "rimraf dist",
@@ -37,15 +37,15 @@
     "lint-staged": ">=10",
     "prettier": "^2.4.0",
     "rimraf": "^3.0.2",
-    "routing-controllers": "^0.9.0",
-    "typedi": "^0.10.0"
+    "routing-controllers": "^0.8.1",
+    "typedi": "^0.10.0",
+    "@types/lodash": "^4.14.176"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": "eslint --fix",
     "*.{json,ts,tsx,js,jsx,md,scss,less,css,html}": "prettier --write"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.176",
     "lodash": "^4.17.21"
   },
   "peerDependencies": {

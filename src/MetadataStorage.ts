@@ -1,5 +1,8 @@
 import { chain } from 'lodash';
 import { getMetadataArgsStorage } from 'routing-controllers';
+import type { ActionMetadataArgs } from 'routing-controllers/metadata/args/ActionMetadataArgs';
+import type { ControllerMetadataArgs } from 'routing-controllers/metadata/args/ControllerMetadataArgs';
+import type { ParamMetadataArgs } from 'routing-controllers/metadata/args/ParamMetadataArgs';
 
 export interface MetadataArgs {
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -9,13 +12,31 @@ export interface MetadataArgs {
   data?: any;
 }
 
+export interface MarkContent<C = any, A = any> {
+  /** 标记在 controller 上的内容 */
+  controller?: C;
+  /** 标记在 action 上的内容 */
+  action?: A;
+}
+
+export interface MarkRoute {
+  /** 接口标记内容 */
+  markContent: MarkContent;
+  /** 接口控制器元数据 */
+  controller: ControllerMetadataArgs;
+  /** 接口方法元数据 */
+  action: ActionMetadataArgs;
+  /** 接口参数元数据 */
+  params: ParamMetadataArgs[];
+}
+
 class MetadataStorage {
   metadataMap = new Map<symbol, MetadataArgs[]>();
 
   static getRouteRegxStr(baseRoute: string, route: string | RegExp, type = 'get') {
     return `^${type} .*${baseRoute}${(route instanceof RegExp ? route.source : route)
       .split('/')
-      .map((s) => (s[0] === ':' ? '.*' : s))
+      .map((s) => (s[0] === ':' ? '.+' : s))
       .join('/')}$`;
   }
 
@@ -61,7 +82,7 @@ class MetadataStorage {
       .uniqBy((m) => m.regxStr)
       .value();
 
-    return uniqRoutes.map(({ action, regxStr }) => {
+    return uniqRoutes.map(({ action, regxStr, controller }) => {
       return {
         regxStr,
         markContent: {
@@ -70,18 +91,34 @@ class MetadataStorage {
             (n) => n.method === action.method && n.target === action.target,
           )?.data,
         },
+        action,
+        controller,
       };
     });
   }
 
-  find(key: symbol, path: string) {
+  find(key: symbol, path: string): MarkRoute | undefined {
     const routes = this.getMarkedRoutes(key);
-
-    return routes.find((m) => {
+    const storage = getMetadataArgsStorage();
+    const route = routes.find((m) => {
       const regx = new RegExp(m.regxStr);
 
       return regx.test(path);
     });
+
+    if (route) {
+      const { action, controller, markContent } = route;
+      const params = storage.filterParamsWithTargetAndMethod(action.target, action.method);
+
+      return {
+        markContent,
+        controller,
+        action,
+        params,
+      };
+    }
+
+    return route;
   }
 }
 

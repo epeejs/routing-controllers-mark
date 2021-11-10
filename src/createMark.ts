@@ -3,19 +3,13 @@ import type { MarkDecorator } from './createMarkDecorator';
 import createMarkDecorator from './createMarkDecorator';
 import type { MarkMiddlewareType } from './createMarkMiddleware';
 import createMarkMiddleware from './createMarkMiddleware';
-
-export interface MarkContent<C = any, A = any> {
-  /** 标记在 controller 上的内容 */
-  controller?: C;
-  /** 标记在 action 上的内容 */
-  action?: A;
-}
+import type { MarkRoute } from './MetadataStorage';
 
 export interface MarkOptions {
   action: (
     context: Context,
     next: (err?: any) => Promise<any>,
-    markContent: MarkContent,
+    route: MarkRoute,
   ) => Promise<any> | void;
 }
 export type MarkType = MarkDecorator & {

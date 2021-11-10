@@ -22,7 +22,7 @@ export default function createMarkMiddleware(
       const route = getMetadataStorage().find(key, `${method} ${context.request.path}`);
 
       if (route && action) {
-        await action(context, next, route.markContent);
+        await action(context, next, route);
         return;
       }
 
