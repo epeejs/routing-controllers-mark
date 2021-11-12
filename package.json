@@ -4,12 +4,12 @@
   "version": "0.0.0-beta.2",
   "scripts": {
     "compile": "npm run clean && tsc -p .",
-    "clean": "rimraf dist",
+    "clean": "rimraf cjs",
     "prepare": "husky install",
     "release": "npm run compile && npm publish --tag beta"
   },
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "main": "cjs/index.js",
+  "typings": "cjs/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/epeejs/routing-controllers-mark"
@@ -21,8 +21,8 @@
   ],
   "keywords": [
     "routing-controllers",
-    "metadata",
-    "mark"
+    "koa",
+    "metadata"
   ],
   "publishConfig": {
     "access": "public",

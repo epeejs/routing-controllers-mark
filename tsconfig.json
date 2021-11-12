@@ -4,7 +4,7 @@
     "moduleResolution": "node",
     "target": "ESNext",
     "lib": ["ESNext"],
-    "outDir": "dist",
+    "outDir": "cjs",
     "rootDir": "./src",
     "strict": true,
     "removeComments": false,
