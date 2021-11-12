@@ -2,7 +2,7 @@
 
 为 [routing-controllers](https://github.com/typestack/routing-controllers) 提供自定义标记拦截能力，实现更加强大易用的切面编程
 
-> 背景：对于一些经常需要对部分或全局做接口拦截的需求（鉴权、验签等），常用做法是使用中间件，通过 UseBefore 或 UseAfter 局部或全局使用，但往往对于需要在中间件内读取路由元数据或部分不拦截时则无法直接实现
+> 背景：对于一些需要对部分或全局做接口拦截的需求（如鉴权、验签等），常用做法是使用中间件，通过 UseBefore 或 UseAfter 局部或全局使用，但往往对于需要在中间件内读取路由元数据或部分接口不拦截时则无法直接实现
 >
 > 解决方案: 自定义标记+拦截
 
@@ -64,19 +64,19 @@ useKoaServer(app, {
 ### step3: 标记需要拦截的接口
 
 ```ts
-@Log(111)
+@Log()
 @Service()
 @JsonController('/posts')
 export class PostController {
   constructor(private postRepository: PostRepository) {}
 
+  // 反选
   @NoLog
   @Get('/')
   all() {
     return this.postRepository.findAll();
   }
 
-  @Log(222)
   @Get('/:id')
   one(@Param('id') id: number) {
     return this.postRepository.findOne(id);
@@ -109,14 +109,14 @@ export class PostController {
 
 ```ts
 export interface MarkRoute {
-  /** 接口标记内容 */
-  markContent: MarkContent;
   /** 接口控制器元数据 */
   controller: ControllerMetadataArgs;
   /** 接口方法元数据 */
   action: ActionMetadataArgs;
   /** 接口参数元数据 */
   params: ParamMetadataArgs[];
+  /** 接口标记内容 */
+  markContent: MarkContent;
 }
 export interface MarkContent<C = any, A = any> {
   /** 标记在 controller 上的内容 */
@@ -131,7 +131,7 @@ export interface MarkContent<C = any, A = any> {
 ```ts
 export type MarkType = {
   /**
-   * 给 action 或 controller 打上标记
+   * 给 action 或 controller 打上标记，标记 controller 时等于标记所有 action
    * @param content 标记信息
    */
   Mark: (content?: any) => ClassDecorator & MethodDecorator;
@@ -144,5 +144,5 @@ export type MarkType = {
 
 ## 代办事项
 
-1. 优化路由元数据计算时机
-2. createMark options 增加 global 属性，支持全局应用拦截，同时支持部分排除
+- [ ] 优化路由元数据计算时机
+- [ ] createMark options 增加 global 属性，支持全局应用拦截，同时支持部分排除
