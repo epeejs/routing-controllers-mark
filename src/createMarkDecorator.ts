@@ -2,7 +2,7 @@ import { getMetadataStorage } from './MetadataStorage';
 
 export interface MarkDecorator {
   /**
-   * 给 action 或 controller 打上标记
+   * 给 action 或 controller 打上标记，标记 controller 时等于标记所有 action
    * @param content 标记信息
    */
   Mark: (content?: any) => ClassDecorator & MethodDecorator;
