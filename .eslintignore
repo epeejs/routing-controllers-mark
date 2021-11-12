@@ -2,3 +2,5 @@
 dist
 es
 lib
+cjs
+commitlint.config.js

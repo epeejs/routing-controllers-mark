@@ -11,6 +11,7 @@
 /docs-dist
 /es
 /lib
+/cjs
 
 # misc
 .DS_Store
