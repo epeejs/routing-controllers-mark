@@ -30,8 +30,14 @@ export interface MarkRoute {
   params: ParamMetadataArgs[];
 }
 
+interface MarkRouteRules extends MarkRoute {
+  /** 匹配路径正则 */
+  test: RegExp;
+}
+
 class MetadataStorage {
   metadataMap = new Map<symbol, MetadataArgs[]>();
+  cacheMarkRouteRuleMap = new Map<symbol, MarkRouteRules[]>();
 
   static getRouteRegxStr(baseRoute: string, route: string | RegExp, type = 'get') {
     return `^${type} .*${baseRoute}${(route instanceof RegExp ? route.source : route)
@@ -45,7 +51,13 @@ class MetadataStorage {
     this.metadataMap.set(key, [...metadatas, metadata]);
   }
 
-  getMarkedRoutes(key: symbol) {
+  getMarkRouteRules(key: symbol) {
+    // 如果存在路由规则缓存，则直接返回
+    const cache = this.cacheMarkRouteRuleMap.get(key);
+
+    if (cache) {
+      return cache;
+    }
     const storage = getMetadataArgsStorage();
     const metadatas = this.metadataMap.get(key) || [];
     const excludeActions = metadatas.filter((m) => m.exclude);
@@ -81,10 +93,11 @@ class MetadataStorage {
       .flatten()
       .uniqBy((m) => m.regxStr)
       .value();
+    const routeRules: MarkRouteRules[] = uniqRoutes.map(({ action, regxStr, controller }) => {
+      const params = storage.filterParamsWithTargetAndMethod(action.target, action.method);
 
-    return uniqRoutes.map(({ action, regxStr, controller }) => {
       return {
-        regxStr,
+        test: new RegExp(regxStr),
         markContent: {
           controller: includeMetadatas.find((n) => n.target === action.target && !n.method)?.data,
           action: includeMetadatas.find(
@@ -93,29 +106,24 @@ class MetadataStorage {
         },
         action,
         controller,
+        params,
       };
     });
+
+    // 写入缓存
+    this.cacheMarkRouteRuleMap.set(key, routeRules);
+
+    return routeRules;
   }
 
   find(key: symbol, path: string): MarkRoute | undefined {
-    const routes = this.getMarkedRoutes(key);
-    const storage = getMetadataArgsStorage();
-    const route = routes.find((m) => {
-      const regx = new RegExp(m.regxStr);
-
-      return regx.test(path);
-    });
+    const routeRules = this.getMarkRouteRules(key);
+    const route = routeRules.find((m) => m.test.test(path));
 
     if (route) {
-      const { action, controller, markContent } = route;
-      const params = storage.filterParamsWithTargetAndMethod(action.target, action.method);
+      const { test, ...otherData } = route;
 
-      return {
-        markContent,
-        controller,
-        action,
-        params,
-      };
+      return otherData;
     }
 
     return route;
