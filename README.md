@@ -144,5 +144,5 @@ export type MarkType = {
 
 ## 代办事项
 
-- [ ] 优化路由元数据计算时机
+- [x] 缓存路由规则计算结果
 - [ ] createMark options 增加 global 属性，支持全局应用拦截，同时支持部分排除
