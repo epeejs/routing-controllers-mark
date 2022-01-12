@@ -117,8 +117,9 @@ class MetadataStorage {
   }
 
   find(key: symbol, path: string): MarkRoute | undefined {
+    const _path = path.endsWith('/') ? path : `${path}/`;
     const routeRules = this.getMarkRouteRules(key);
-    const route = routeRules.find((m) => m.test.test(path));
+    const route = routeRules.find((m) => m.test.test(_path));
 
     if (route) {
       const { test, ...otherData } = route;
