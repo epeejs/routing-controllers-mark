@@ -88,6 +88,41 @@ export class PostController {
 
 在使用注解时，会收集相关元数据，在中间件内映射当前请求到对应路由元数据，实现拦截能力
 
+## 更多用法
+
+```ts
+import { createMark } from '@epeejs/routing-controllers-mark';
+
+// 基于角色鉴权
+const {
+  Mark: Role,
+  RemoveMark: RemoveRole,
+  MarkMiddleware: AuthorityMiddleware,
+} = createMark({
+  action(context, route) {
+    // action 上标记的内容
+    const { action: role } = route.markContent;
+    // ...role verify
+    // if (!paas) {
+    //   throw new BadRequestError();
+    // }
+  },
+});
+
+@Service()
+@JsonController('/posts')
+export class PostController {
+  constructor(private postRepository: PostRepository) {}
+
+  // 仅是 admin 角色允许访问
+  @Role('admin')
+  @Get('/')
+  all() {
+    return this.postRepository.findAll();
+  }
+}
+```
+
 ## API
 
 ### function createMark(options)
