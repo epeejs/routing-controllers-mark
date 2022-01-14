@@ -30,14 +30,14 @@ export interface MarkRoute {
   params: ParamMetadataArgs[];
 }
 
-interface MarkRouteRules extends MarkRoute {
+interface MarkRouteRule extends MarkRoute {
   /** 匹配路径正则 */
   test: RegExp;
 }
 
 class MetadataStorage {
   metadataMap = new Map<symbol, MetadataArgs[]>();
-  cacheMarkRouteRuleMap = new Map<symbol, MarkRouteRules[]>();
+  cacheMarkRouteRuleMap = new Map<symbol, MarkRouteRule[]>();
 
   static getRouteRegxStr(baseRoute: string, route: string | RegExp, type = 'get') {
     return `^${type} .*${baseRoute}${(route instanceof RegExp ? route.source : route)
@@ -93,7 +93,7 @@ class MetadataStorage {
       .flatten()
       .uniqBy((m) => m.regxStr)
       .value();
-    const routeRules: MarkRouteRules[] = uniqRoutes.map(({ action, regxStr, controller }) => {
+    const routeRules: MarkRouteRule[] = uniqRoutes.map(({ action, regxStr, controller }) => {
       const params = storage.filterParamsWithTargetAndMethod(action.target, action.method);
 
       return {
