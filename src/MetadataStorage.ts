@@ -40,10 +40,18 @@ class MetadataStorage {
   cacheMarkRouteRuleMap = new Map<symbol, MarkRouteRule[]>();
 
   static getRouteRegxStr(baseRoute: string, route: string | RegExp, type = 'get') {
-    return `^${type} .*${baseRoute}${(route instanceof RegExp ? route.source : route)
-      .split('/')
-      .map((s) => (s[0] === ':' ? '.+' : s))
-      .join('/')}$`;
+    let actionPath = route instanceof RegExp ? route.source : route;
+
+    if (actionPath === '/') {
+      actionPath = '/?';
+    } else {
+      actionPath = actionPath
+        .split('/')
+        .map((s) => (s[0] === ':' ? '.+' : s))
+        .join('/');
+    }
+
+    return `^${type} .*${baseRoute}${actionPath}$`;
   }
 
   push(key: symbol, metadata: MetadataArgs) {
@@ -117,9 +125,8 @@ class MetadataStorage {
   }
 
   find(key: symbol, path: string): MarkRoute | undefined {
-    const _path = path.endsWith('/') ? path : `${path}/`;
     const routeRules = this.getMarkRouteRules(key);
-    const route = routeRules.find((m) => m.test.test(_path));
+    const route = routeRules.find((m) => m.test.test(path));
 
     if (route) {
       const { test, ...otherData } = route;
