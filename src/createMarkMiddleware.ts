@@ -25,7 +25,7 @@ export default function createMarkMiddleware(
         try {
           await action(context, route);
         } catch (error) {
-          return next(error);
+          throw error;
         }
       }
 
