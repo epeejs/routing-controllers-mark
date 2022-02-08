@@ -1,7 +1,7 @@
 {
   "name": "@epeejs/routing-controllers-mark",
   "description": "适用于 routing-controllers 的自定义注解拦截功能",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "scripts": {
     "compile": "npm run clean && tsc -p .",
     "clean": "rimraf cjs",
